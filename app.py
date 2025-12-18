@@ -10,7 +10,6 @@ from scipy.spatial import ConvexHull
 from streamlit_gsheets import GSheetsConnection
 
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/edit"
-# Replace this with the specific tab name (category) you want to load
 WORKSHEET_NAME = "Ethnic"
 
 st.set_page_config(page_title="Genetics Visualization", layout="wide")
