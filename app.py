@@ -12,6 +12,7 @@ FILENAME = 'https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg
 
 st.set_page_config(page_title="Genetics Visualization", layout="wide")
 
+
 @st.cache_data(ttl=600)
 def load_data(path):
     try:
