@@ -4,3 +4,4 @@ numpy
 scikit-learn
 umap-learn
 scipy
+streamlit-gsheets-connection
