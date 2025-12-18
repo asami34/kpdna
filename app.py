@@ -7,19 +7,15 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import umap.umap_ as umap
 from scipy.spatial import ConvexHull
-from streamlit_gsheets import GSheetsConnection
 
-SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/edit"
-WORKSHEET_NAME = "Ethnic"
+FILENAME = 'https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/edit?gid=303129793&single=true&output=csv'
 
 st.set_page_config(page_title="Genetics Visualization", layout="wide")
 
 @st.cache_data(ttl=600)
-def load_data(url, worksheet):
+def load_data(path):
     try:
-        conn = st.connection("gsheets", type=GSheetsConnection)
-        
-        df = conn.read(spreadsheet=url, worksheet=worksheet)
+        df = pd.read_csv(path)
         
         def clean_hex(x):
             if isinstance(x, str):
@@ -32,15 +28,13 @@ def load_data(url, worksheet):
             if col in df.columns:
                 df[col] = df[col].apply(clean_hex)
         return df
-        
-    except Exception as e:
-        st.error(f"Error loading Google Sheet: {e}")
+    except FileNotFoundError:
         return None
 
-df_all = load_data(SPREADSHEET_URL, WORKSHEET_NAME)
+df_all = load_data(FILENAME)
 
 if df_all is None:
-    st.error(f"Could not load data. Please check the URL and Worksheet name.")
+    st.error(f"File not found: {FILENAME}. Please check the path in the script.")
     st.stop()
 
 st.sidebar.header("Configuration")
