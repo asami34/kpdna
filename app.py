@@ -8,14 +8,14 @@ from sklearn.manifold import TSNE
 import umap.umap_ as umap
 from scipy.spatial import ConvexHull
 
-FILENAME = 'https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/edit?gid=303129793&single=true&output=csv'
+FILENAME = 'https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/export?format=csv&gid=303129793'
 
 st.set_page_config(page_title="Genetics Visualization", layout="wide")
 
 @st.cache_data(ttl=600)
 def load_data(path):
     try:
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, engine='python', on_bad_lines='skip')
         
         def clean_hex(x):
             if isinstance(x, str):
@@ -29,6 +29,9 @@ def load_data(path):
                 df[col] = df[col].apply(clean_hex)
         return df
     except FileNotFoundError:
+        return None
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
         return None
 
 df_all = load_data(FILENAME)
