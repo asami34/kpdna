@@ -7,15 +7,20 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import umap.umap_ as umap
 from scipy.spatial import ConvexHull
+from streamlit_gsheets import GSheetsConnection
 
-FILENAME = 'genetics.csv'
+SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1ch2PxWYFILX_hR6qE4sLKNjSq_Fg9A_SzbFstcz_hm4/edit"
+# Replace this with the specific tab name (category) you want to load
+WORKSHEET_NAME = "Ethnic"
 
 st.set_page_config(page_title="Genetics Visualization", layout="wide")
 
-@st.cache_data
-def load_data(path):
+@st.cache_data(ttl=600)
+def load_data(url, worksheet):
     try:
-        df = pd.read_csv(path)
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        
+        df = conn.read(spreadsheet=url, worksheet=worksheet)
         
         def clean_hex(x):
             if isinstance(x, str):
@@ -28,13 +33,15 @@ def load_data(path):
             if col in df.columns:
                 df[col] = df[col].apply(clean_hex)
         return df
-    except FileNotFoundError:
+        
+    except Exception as e:
+        st.error(f"Error loading Google Sheet: {e}")
         return None
 
-df_all = load_data(FILENAME)
+df_all = load_data(SPREADSHEET_URL, WORKSHEET_NAME)
 
 if df_all is None:
-    st.error(f"File not found: {FILENAME}. Please check the path in the script.")
+    st.error(f"Could not load data. Please check the URL and Worksheet name.")
     st.stop()
 
 st.sidebar.header("Configuration")
